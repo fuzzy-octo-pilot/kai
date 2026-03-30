@@ -11,6 +11,8 @@ const { Lexer } = require('./src/lexer');
 const Parser = require('./src/parser');
 const { Interpreter } = require('./src/interpreter');
 const { TypeChecker } = require('./src/typechecker');
+const { Compiler } = require('./src/compiler');
+const { VM } = require('./src/vm');
 
 // ANSI color codes
 const colors = {
@@ -25,10 +27,10 @@ const colors = {
 /**
  * Run a .kai file
  */
-function runFile(filename) {
+function runFile(filename, useVM = false) {
   try {
     const source = fs.readFileSync(filename, 'utf-8');
-    const result = execute(source);
+    const result = execute(source, true, useVM);
 
     if (result !== undefined) {
       console.log(colors.cyan + 'Result:' + colors.reset, result);
@@ -41,8 +43,11 @@ function runFile(filename) {
 
 /**
  * Execute source code
+ * @param {string} source - Source code
+ * @param {boolean} typeCheck - Whether to type check
+ * @param {boolean} useVM - Whether to use VM instead of interpreter
  */
-function execute(source, typeCheck = true) {
+function execute(source, typeCheck = true, useVM = false) {
   const lexer = new Lexer(source);
   const tokens = lexer.tokenize();
   const parser = new Parser(tokens);
@@ -62,8 +67,25 @@ function execute(source, typeCheck = true) {
     }
   }
 
-  const interpreter = new Interpreter();
-  return interpreter.run(ast);
+  // Choose execution engine
+  if (useVM) {
+    // Use bytecode VM (Phase 5.1+)
+    try {
+      const compiler = new Compiler();
+      const chunk = compiler.compile(ast);
+      const vm = new VM();
+      return vm.interpret(chunk);
+    } catch (e) {
+      // Fallback to interpreter on error
+      console.log(colors.yellow + 'VM Error, falling back to interpreter:' + colors.reset, e.message);
+      const interpreter = new Interpreter();
+      return interpreter.run(ast);
+    }
+  } else {
+    // Use tree-walking interpreter
+    const interpreter = new Interpreter();
+    return interpreter.run(ast);
+  }
 }
 
 /**
@@ -212,25 +234,37 @@ function main() {
   if (args.length === 0) {
     // No arguments - run REPL
     runRepl();
-  } else if (args.length === 1) {
-    // One argument - run file
-    const filename = args[0];
-    if (filename === '--help' || filename === '-h') {
-      console.log('Kai Programming Language v0.1');
-      console.log('\nUsage:');
-      console.log('  kai              - Start REPL');
-      console.log('  kai <file.kai>   - Run a .kai file');
-      console.log('  kai --help       - Show this help');
-      process.exit(0);
-    }
-    runFile(filename);
   } else {
-    console.error(colors.red + 'Error:' + colors.reset + ' Too many arguments');
-    console.log('Usage: kai [file.kai]');
-    console.log('Run "kai --help" for more information');
-    process.exit(1);
+    // Parse flags
+    let useVM = false;
+    let filename = null;
+
+    for (const arg of args) {
+      if (arg === '--vm' || arg === '-v') {
+        useVM = true;
+      } else if (arg === '--help' || arg === '-h') {
+        console.log('Kai Programming Language v0.5.0-dev');
+        console.log('\nUsage:');
+        console.log('  kai                  - Start REPL');
+        console.log('  kai <file.kai>       - Run a .kai file (interpreter)');
+        console.log('  kai --vm <file.kai>   - Run with bytecode VM');
+        console.log('  kai --help           - Show this help');
+        process.exit(0);
+      } else {
+        filename = arg;
+      }
+    }
+
+    if (filename) {
+      runFile(filename, useVM);
+    } else {
+      console.error(colors.red + 'Error:' + colors.reset + ' No file specified');
+      console.log('Usage: kai [--vm] <file.kai>');
+      process.exit(1);
+    }
   }
 }
+
 
 // Run main
 main();
