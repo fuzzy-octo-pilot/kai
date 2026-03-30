@@ -4,7 +4,7 @@ export default defineConfig({
   title: 'Kai Language',
   description: 'A minimal, elegant programming language for ML/AI development',
   lang: 'en-US',
-  base: '/',
+  base: '/kai/',
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#3c8772' }],
