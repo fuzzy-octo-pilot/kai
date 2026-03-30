@@ -46,6 +46,13 @@ class ArrayLiteral extends ASTNode {
   }
 }
 
+class RecordLiteral extends ASTNode {
+  constructor(fields) {
+    super('RecordLiteral');
+    this.fields = fields; // { key: string, value: ASTNode }[]
+  }
+}
+
 // Identifier
 class Identifier extends ASTNode {
   constructor(name) {
@@ -79,6 +86,15 @@ class AssignStmt extends ASTNode {
     this.name = name; // string
     this.value = value; // ASTNode
     this.annotation = annotation; // string | null (e.g., "float" or "float[]")
+  }
+}
+
+// Mutation: x = value (reassign existing variable)
+class AssignExpr extends ASTNode {
+  constructor(target, value) {
+    super('AssignExpr');
+    this.target = target; // ASTNode (Identifier or MemberExpr)
+    this.value = value; // ASTNode
   }
 }
 
@@ -146,6 +162,29 @@ class ForLoop extends ASTNode {
   }
 }
 
+// While loop: while cond { body }
+class WhileLoop extends ASTNode {
+  constructor(cond, body) {
+    super('WhileLoop');
+    this.cond = cond; // ASTNode
+    this.body = body; // BlockExpr
+  }
+}
+
+// Break statement: break
+class BreakStmt extends ASTNode {
+  constructor() {
+    super('BreakStmt');
+  }
+}
+
+// Continue statement: continue
+class ContinueStmt extends ASTNode {
+  constructor() {
+    super('ContinueStmt');
+  }
+}
+
 // Pipeline expression: left |> right
 class PipeExpr extends ASTNode {
   constructor(left, right) {
@@ -170,10 +209,12 @@ module.exports = {
   BoolLiteral,
   NullLiteral,
   ArrayLiteral,
+  RecordLiteral,
   Identifier,
   BinaryExpr,
   UnaryExpr,
   AssignStmt,
+  AssignExpr,
   FuncExpr,
   CallExpr,
   MemberExpr,
@@ -181,6 +222,9 @@ module.exports = {
   IfExpr,
   ReturnStmt,
   ForLoop,
+  WhileLoop,
+  BreakStmt,
+  ContinueStmt,
   PipeExpr,
   Program,
 };

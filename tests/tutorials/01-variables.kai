@@ -1,0 +1,163 @@
+# Chapter 1: Variables & Types - Test Suite
+# This file tests the concepts from Chapter 1
+
+print("=== Chapter 1: Variables & Types Tests ===\n")
+
+# Test 1: Basic declaration
+print("Test 1: Basic declaration")
+x := 42
+if x != 42 {
+  print("  ❌ FAIL: Expected 42, got", x)
+} else {
+  print("  ✓ PASS")
+}
+
+# Test 2: Type annotation
+print("\nTest 2: Type annotation")
+age: int := 25
+name: string := "Kai"
+pi: float := 3.14
+is_valid: bool := true
+
+if age != 25 {
+  print("  ❌ FAIL: Expected age=25, got", age)
+} else if name != "Kai" {
+  print("  ❌ FAIL: Expected name='Kai', got", name)
+} else if pi != 3.14 {
+  print("  ❌ FAIL: Expected pi=3.14, got", pi)
+} else if is_valid != true {
+  print("  ❌ FAIL: Expected is_valid=true, got", is_valid)
+} else {
+  print("  ✓ PASS")
+}
+
+# Test 3: Mutation operator
+print("\nTest 3: Mutation operator")
+count := 0
+if count != 0 {
+  print("  ❌ FAIL: Expected initial count=0, got", count)
+} else {
+  count = 10
+  if count != 10 {
+    print("  ❌ FAIL: Expected mutated count=10, got", count)
+  } else {
+    print("  ✓ PASS")
+  }
+}
+
+# Test 4: String operations
+print("\nTest 4: String operations")
+greeting := "Hello"
+target := "World"
+message := greeting + ", " + target + "!"
+
+if message != "Hello, World!" {
+  print("  ❌ FAIL: Expected 'Hello, World!', got", message)
+} else {
+  print("  ✓ PASS")
+}
+
+# Test 5: Array declaration and methods
+print("\nTest 5: Array operations")
+numbers := [1, 2, 3, 4, 5]
+
+# Test array mean
+avg := numbers.mean()
+if avg != 3.0 {
+  print("  ❌ FAIL: Expected mean=3.0, got", avg)
+} else {
+  print("  ✓ PASS (mean)")
+}
+
+# Test array map
+doubled := numbers.map(x => x * 2)
+expected_doubled := [2, 4, 6, 8, 10]
+# We can't compare arrays directly yet, so check length
+if doubled.length != expected_doubled.length {
+  print("  ❌ FAIL: Expected doubled.length=5, got", doubled.length)
+} else {
+  print("  ✓ PASS (map)")
+}
+
+# Test array sum
+sum := numbers.sum()
+if sum != 15 {
+  print("  ❌ FAIL: Expected sum=15, got", sum)
+} else {
+  print("  ✓ PASS (sum)")
+}
+
+# Test 6: Integer arithmetic
+print("\nTest 6: Integer arithmetic")
+a := 10
+b := 20
+sum := a + b
+diff := a - b
+prod := a * b
+quot := b / a
+
+if sum != 30 {
+  print("  ❌ FAIL: Expected sum=30, got", sum)
+} else if diff != -10 {
+  print("  ❌ FAIL: Expected diff=-10, got", diff)
+} else if prod != 200 {
+  print("  ❌ FAIL: Expected prod=200, got", prod)
+} else if quot != 2 {
+  print("  ❌ FAIL: Expected quot=2, got", quot)
+} else {
+  print("  ✓ PASS")
+}
+
+# Test 7: Float arithmetic
+print("\nTest 7: Float arithmetic")
+x: float := 3.14
+y: float := 2.0
+result := x * y
+
+# Check if result is approximately 6.28
+if result < 6.27 || result > 6.29 {
+  print("  ❌ FAIL: Expected result≈6.28, got", result)
+} else {
+  print("  ✓ PASS")
+}
+
+# Test 8: Boolean operations
+print("\nTest 8: Boolean operations")
+is_true := true
+is_false := false
+
+if is_true != true {
+  print("  ❌ FAIL: Expected is_true=true")
+} else if is_false != false {
+  print("  ❌ FAIL: Expected is_false=false")
+} else {
+  print("  ✓ PASS")
+}
+
+# Test 9: Variable shadowing (should work in same scope)
+print("\nTest 9: Multiple variables")
+x := 100
+y := 200
+z := x + y
+
+if z != 300 {
+  print("  ❌ FAIL: Expected z=300, got", z)
+} else {
+  print("  ✓ PASS")
+}
+
+# Test 10: Chained mutation
+print("\nTest 10: Chained mutation")
+counter := 0
+counter = counter + 1
+counter = counter * 2
+counter = counter - 1
+
+if counter != 1 {
+  print("  ❌ FAIL: Expected counter=1, got", counter)
+} else {
+  print("  ✓ PASS")
+}
+
+print("\n=== All Tests Completed ===")
+print("If you see all ✓ marks, you're ready for Chapter 2!")

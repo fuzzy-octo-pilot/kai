@@ -11,10 +11,12 @@ const {
   BoolLiteral,
   NullLiteral,
   ArrayLiteral,
+  RecordLiteral,
   Identifier,
   BinaryExpr,
   UnaryExpr,
   AssignStmt,
+  AssignExpr,
   FuncExpr,
   CallExpr,
   MemberExpr,
@@ -22,6 +24,9 @@ const {
   IfExpr,
   ReturnStmt,
   ForLoop,
+  WhileLoop,
+  BreakStmt,
+  ContinueStmt,
   PipeExpr,
 } = require('./ast');
 
@@ -52,7 +57,7 @@ class Parser {
   }
 
   /**
-   * Parse a statement (assignment, return, if, for, or expression)
+   * Parse a statement (assignment, return, if, for, while, break, continue, or expression)
    */
   statement() {
     // If statement: if cond { ... } else { ... }
@@ -60,9 +65,26 @@ class Parser {
       return this.parseIfStatement();
     }
 
+    // While loop: while cond { ... }
+    if (this.check(TokenType.IDENT) && this.peek().value === 'while') {
+      return this.parseWhileLoop();
+    }
+
     // For loop: for var in iterable { ... }
     if (this.check(TokenType.IDENT) && this.peek().value === 'for') {
       return this.parseForLoop();
+    }
+
+    // Break statement: break
+    if (this.check(TokenType.IDENT) && this.peek().value === 'break') {
+      this.advance(); // consume 'break'
+      return new BreakStmt();
+    }
+
+    // Continue statement: continue
+    if (this.check(TokenType.IDENT) && this.peek().value === 'continue') {
+      this.advance(); // consume 'continue'
+      return new ContinueStmt();
     }
 
     // Return statement: return expr
@@ -72,50 +94,86 @@ class Parser {
       return new ReturnStmt(value);
     }
 
-    // Assignment: ident or ident : type := expr
+    // Assignment/Mutation: ident or ident : type := expr or target = expr
     if (this.check(TokenType.IDENT)) {
       const ident = this.peek();
 
-      // Look ahead to check if this is an assignment
-      const nextIdx = this.current + 1;
-      const nextNextIdx = this.current + 2;
+      // Look ahead to check if this is an assignment or mutation
+      // We need to look ahead further to detect patterns like:
+      // x := expr (simple assignment)
+      // x : type := expr (typed assignment)
+      // x = expr (variable mutation)
+      // x.y = expr (member mutation, including chained: x.y.z = expr)
 
-      // Case 1: x := expr (simple assignment)
-      // Case 2: x : type := expr (typed assignment)
-      if (nextIdx < this.tokens.length) {
-        const next = this.tokens[nextIdx];
+      let i = this.current + 1;
 
-        // Check for typed assignment: x : type := ...
-        if (next.type === TokenType.COLON) {
-          if (nextNextIdx < this.tokens.length) {
-            const nextNext = this.tokens[nextNextIdx];
-
-            // nextNext should be a type identifier
-            if (nextNext.type === TokenType.IDENT) {
-              const name = this.advance().value;
-              this.advance(); // consume ':'
-
-              // Parse type annotation
-              const annotation = this.parseTypeAnnotation();
-
-              // Expect :=
-              if (!this.check(TokenType.ASSIGN)) {
-                this.error(this.peek(), `Expected ':=' after type annotation`);
-              }
-              this.advance(); // consume ':='
-
-              const value = this.expression();
-              return new AssignStmt(name, value, annotation);
-            }
-          }
-        }
-
-        // Check for simple assignment: x := ...
-        if (next.type === TokenType.ASSIGN) {
+      // Check for typed assignment: x : type := ...
+      // Pattern: IDENT COLON IDENT ASSIGN ...
+      // This must be checked before mutation because ':' comes before '='
+      if (i < this.tokens.length && this.tokens[i].type === TokenType.COLON) {
+        if (i + 1 < this.tokens.length && this.tokens[i + 1].type === TokenType.IDENT) {
           const name = this.advance().value;
+          this.advance(); // consume ':'
+          const annotation = this.parseTypeAnnotation();
+
+          if (!this.check(TokenType.ASSIGN)) {
+            this.error(this.peek(), `Expected ':=' after type annotation`);
+          }
           this.advance(); // consume ':='
+
           const value = this.expression();
-          return new AssignStmt(name, value, null);
+          return new AssignStmt(name, value, annotation);
+        }
+      }
+
+      // Check for simple assignment: x := ...
+      // Pattern: IDENT ASSIGN ...
+      if (i < this.tokens.length && this.tokens[i].type === TokenType.ASSIGN) {
+        const name = this.advance().value;
+        this.advance(); // consume ':='
+        const value = this.expression();
+        return new AssignStmt(name, value, null);
+      }
+
+      // Check for mutation: x = expr or x.y = expr or x.y.z = expr
+      // Pattern: IDENT (DOT IDENT)* MUTATE ...
+      // We need to scan ahead to find if there's a '=' after a member expression
+      if (i < this.tokens.length && this.tokens[i].type === TokenType.MUTATE) {
+        // Simple variable mutation: x = value
+        const name = this.advance().value; // consume IDENT
+        this.advance(); // consume '='
+        const value = this.expression();
+        return new AssignExpr(new Identifier(name), value);
+      }
+
+      // Check for member mutation: obj.prop = value or obj.prop.nested = value
+      // Pattern: IDENT DOT IDENT (DOT IDENT)* MUTATE ...
+      let j = i;
+      let hasMemberAccess = false;
+      while (j < this.tokens.length) {
+        if (this.tokens[j].type === TokenType.DOT) {
+          hasMemberAccess = true;
+          j++; // skip '.'
+          if (j < this.tokens.length && this.tokens[j].type === TokenType.IDENT) {
+            j++; // skip property name
+          } else {
+            break; // Invalid pattern
+          }
+        } else if (this.tokens[j].type === TokenType.MUTATE) {
+          // Found '=' after member access!
+          if (hasMemberAccess) {
+            // Parse as member mutation
+            const target = this.expression(); // Parses obj.prop or obj.prop.nested
+            if (!this.check(TokenType.MUTATE)) {
+              this.error(this.peek(), `Expected '=' for mutation`);
+            }
+            this.advance(); // consume '='
+            const value = this.expression();
+            return new AssignExpr(target, value);
+          }
+          break;
+        } else {
+          break; // Not a member mutation pattern
         }
       }
     }
@@ -366,6 +424,65 @@ class Parser {
       return new ArrayLiteral(elements);
     }
 
+    // Record literal: { key1: val1, key2: val2, ... }
+    // Must distinguish from control blocks like { if ... } or { for ... }
+    if (this.check(TokenType.LBRACE)) {
+      // Look ahead to see if this is a record literal
+      const saved = this.current;
+      this.advance(); // Skip '{'
+
+      // Skip newlines
+      while (this.check(TokenType.NEWLINE)) {
+        this.advance();
+      }
+
+      // Check if next token is IDENT followed by COLON (record field)
+      const isRecord = this.check(TokenType.IDENT) &&
+        this.current + 1 < this.tokens.length &&
+        this.tokens[this.current + 1].type === TokenType.COLON;
+
+      this.current = saved; // Restore position
+
+      if (isRecord) {
+        this.advance(); // consume '{'
+
+        const fields = [];
+
+        if (!this.check(TokenType.RBRACE)) {
+          do {
+            // Skip newlines
+            while (this.match(TokenType.NEWLINE)) {}
+
+            // Parse field key (must be identifier)
+            if (!this.check(TokenType.IDENT)) {
+              this.error(this.peek(), `Expected identifier as record field key`);
+            }
+
+            const key = this.advance().value;
+
+            // Expect ':' after key
+            if (!this.match(TokenType.COLON)) {
+              this.error(this.peek(), `Expected ':' after record field key`);
+            }
+
+            // Parse field value
+            const value = this.expression();
+            fields.push({ key, value });
+
+            // Skip newlines before comma
+            while (this.match(TokenType.NEWLINE)) {}
+          } while (this.match(TokenType.COMMA));
+        }
+
+        if (!this.match(TokenType.RBRACE)) {
+          this.error(this.peek(), `Expected '}' after record fields`);
+        }
+
+        return new RecordLiteral(fields);
+      }
+      // Otherwise fall through to block parsing
+    }
+
     // Block: { stmt1; stmt2; ... }
     if (this.match(TokenType.LBRACE)) {
       return this.block();
@@ -568,9 +685,21 @@ class Parser {
     return new ForLoop(varName, iterable, body);
   }
 
-  /**
-   * Helper methods
-   */
+  parseWhileLoop() {
+    this.advance(); // consume 'while'
+
+    // Parse condition
+    const cond = this.expression();
+
+    // Parse body block
+    if (!this.check(TokenType.LBRACE)) {
+      this.error(this.peek(), `Expected '{' after while condition`);
+    }
+    const body = this.block();
+
+    return new WhileLoop(cond, body);
+  }
+
   match(...types) {
     for (const type of types) {
       if (this.check(type)) {

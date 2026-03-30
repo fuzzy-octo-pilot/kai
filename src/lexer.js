@@ -16,6 +16,7 @@ const TokenType = {
 
   // Operators
   ASSIGN: ':=',
+  MUTATE: '=',
   ARROW: '=>',
   PLUS: '+',
   MINUS: '-',
@@ -193,7 +194,8 @@ class Lexer {
           this.advance(); // consume '>'
           this.addToken(TokenType.ARROW);
         } else {
-          this.error(`Unexpected '='. Use ':=' for assignment, '=>' for functions, or '==' for equality.`);
+          // Single '=' is mutation operator (v0.4.0)
+          this.addToken(TokenType.MUTATE);
         }
         break;
       case '<':

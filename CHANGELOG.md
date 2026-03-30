@@ -5,6 +5,75 @@ All notable changes to Kai will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-03-30
+
+### Added
+- **Records (Structs/Objects)**
+  - Record literal syntax: `{ key: value, key2: value2 }`
+  - Nested records support
+  - Dot notation for property access: `record.property`
+  - Perfect for ML model configurations
+  - Records implemented as plain JavaScript objects
+
+- **Mutation Operator (=)**
+  - Variable reassignment: `x = x + 1`
+  - Record field mutation: `obj.prop = value`
+  - Chained member mutation: `obj.prop.nested = value`
+  - Distinct from assignment (`:=` creates new bindings, `=` mutates existing)
+  - Essential for training loops and state updates
+
+- **While Loops**
+  - Conditional iteration: `while condition { body }`
+  - Supports boolean and numeric conditions
+  - Lexical scoping for loop body
+
+- **Loop Control: Break & Continue**
+  - `break` statement to exit while loops early
+  - `continue` statement to skip to next iteration
+  - Exception-based flow control for clean implementation
+
+- **AST Nodes**
+  - `RecordLiteral` - for record literals
+  - `AssignExpr` - for mutation (= operator)
+  - `WhileLoop` - for while loops
+  - `BreakStmt` - for break statements
+  - `ContinueStmt` - for continue statements
+
+- **Parser Improvements**
+  - Record literal parsing with lookahead to distinguish from blocks
+  - Flexible mutation detection for simple and chained member access
+  - While loop parsing with condition and body
+
+- **Interpreter Enhancements**
+  - Record evaluation creates plain JavaScript objects
+  - Mutation uses `env.set()` for variables, direct property assignment for records
+  - While loop evaluation with break/continue handling via try/catch
+
+- **Type Checker Updates**
+  - Record literal type checking (currently T_ANY, structural typing planned)
+  - Mutation type checking with type compatibility verification
+  - While loop condition type checking
+  - Break/continue statement type checking (T_VOID)
+
+- **Test Suite**
+  - New `tests/records.kai` with 112 lines of comprehensive tests
+  - Tests record literals, nested records, mutation, while loops, break/continue
+  - All edge cases covered
+
+### Changed
+- Enhanced `evalMemberExpr` to handle record property access
+- Updated parser statement detection for mutation patterns
+- Lexer now recognizes `=` as MUTATE token (not an error)
+
+### Fixed
+- Fixed parser to handle chained member access mutation (`obj.prop.nested = value`)
+- Fixed record property access to return correct values
+- Fixed while loop break/continue signal handling
+- Fixed numeric array operations to validate element types
+  - `mean()`, `sum()`, `std()`, `variance()`, `min()`, `max()`, `normalize()`, `dot()` now require all array elements to be numeric
+  - Previously, arrays with mixed types (e.g., `[1, "2", 3]`) would cause string concatenation bugs
+  - Now throws descriptive error: `mean() requires all array elements to be numeric. Element at index 1 is string: "2"`
+
 ## [0.3.0] - 2026-03-30
 
 ### Added

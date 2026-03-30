@@ -8,7 +8,7 @@
 
 [Kai](https://github.com/yourname/kai) is a clean, minimal language designed for machine learning and data science. It combines the best features of Go, JavaScript, Python, and Julia into a unified syntax that feels natural for both scripting and production.
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue)](https://github.com/yourname/kai/releases)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue)](https://github.com/yourname/kai/releases)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 </div>
@@ -40,7 +40,8 @@
 - **Built-in statistics** — `mean`, `std`, `normalize`, `dot` are globals, not imports
 - **Pipeline operator** — Natural data flow: `data |> normalize |> mean`
 - **ML-first** — Designed from the ground up for data pipelines and model training
-- **Control flow** — `if/else` and `for` loops for general-purpose programming
+- **Records & Mutation** — Struct literals for model configs, mutation for training loops
+- **Full control flow** — `if/else`, `for`, `while`, `break`, `continue`
 
 ### Why Kai?
 
@@ -80,7 +81,7 @@ Kai takes the best ideas from multiple languages:
 ### Unique to Kai
 - **Gradual typing** — Untyped code works, typed code gets checked and will get JIT-optimized
 - **ML standard library** — Statistics and array ops built-in, not imports
-- **Tensor types** — Shape is part of the type: `Tensor[float32, (128, 64)]` *(coming in v0.4)*
+- **Tensor types** — Shape is part of the type: `Tensor[float32, (128, 64)]` *(planned)*
 
 ---
 
@@ -208,6 +209,41 @@ print(nums.min)   # 1
 result := []
 result := result.push(42)  # [42]
 ```
+
+> **Note:** Numeric array operations (`sum`, `mean`, `std`, `min`, `max`, `normalize`, `dot`) require all elements to be numeric. Arrays with mixed types (e.g., `[1, "2", 3]`) will throw a descriptive error to prevent silent bugs from string concatenation.
+
+### 📦 Records (Structs)
+
+```kai
+# Record literals - perfect for ML model configs
+person := { name: "Alice", age: 30, city: "NYC" }
+print(person.name)  # Alice
+print(person.age)   # 30
+
+# Nested records
+model := {
+  layers: [64, 32, 10],
+  lr: 0.001,
+  epochs: 100,
+  config: { optimizer: "adam", beta1: 0.9 }
+}
+
+print(model.layers)           # [64, 32, 10]
+print(model.config.optimizer) # adam
+
+# Mutation with = operator (distinct from :=)
+person.age = 31           # Update field
+model.lr = 0.01           # Update learning rate
+model.config.optimizer = "sgd"  # Update nested field
+
+# Variable mutation
+x := 10
+x = x + 5   # x is now 15
+```
+
+**Key distinction:**
+- `:=` creates a **new binding** (declaration)
+- `=` **mutates** an existing variable or record field
 
 ### ⚡ Pipeline Operator
 
@@ -341,7 +377,7 @@ flag: bool := true
 data: float[] := [1.0, 2.5, 3.7]
 ```
 
-> **Note:** `:=` always declares a new binding. Reassignment (`x = x + 1`) is planned for v0.4.
+> **Note:** `:=` always declares a new binding. Use `=` to mutate existing variables (`x = x + 1`).
 
 ### Functions
 
@@ -375,6 +411,26 @@ if condition {
 # For loops
 for item in collection {
   print(item)
+}
+
+# While loops
+x := 0
+while x < 5 {
+  print(x)
+  x = x + 1
+}
+
+# Break and Continue
+i := 0
+while i < 10 {
+  i = i + 1
+  if i == 5 {
+    break  # Exit loop
+  }
+  if i % 2 == 0 {
+    continue  # Skip to next iteration
+  }
+  print(i)
 }
 
 # Nested control flow
@@ -642,6 +698,8 @@ print("5! = " + factorial(5))  # 120
 | `filter(arr, fn)` | Filter elements | `filter([1,2,3], x => x>1)` → `[2,3]` |
 | `reduce(arr, fn, init)` | Fold | `reduce([1,2,3], (a,b) => a+b, 0)` → `6` |
 
+> **⚠️ Type Safety:** Numeric operations (`sum`, `mean`, `min`, `max`, `std`, `variance`, `normalize`, `dot`) require all array elements to be numeric. Mixed-type arrays will throw a descriptive error.
+
 ### Statistics (ML-focused)
 
 | Function | Description |
@@ -680,23 +738,24 @@ print("5! = " + factorial(5))  # 120
 
 ## Performance
 
-### Current Implementation (v0.3)
+### Current Implementation (v0.4)
 
 Kai uses a **tree-walking interpreter** — the focus right now is on correctness and language design, not raw speed. It is suitable for scripts, data exploration, and prototyping.
 
 **Control flow overhead:**
 - If statements: ~5ns overhead (branch prediction friendly)
 - For loops: ~50ns per iteration (array access dominates)
+- While loops: ~50ns per iteration (similar to for loops)
 - Nested loops: Scales O(n) naturally
 
 ### Performance Roadmap
 
 | Version | Feature | Expected Speedup |
 |---|---|---|
-| v0.4 | Bytecode VM (register-based) | ~10× vs tree-walker |
-| v0.5 | Tracing JIT via Cranelift | ~50× on hot loops |
-| v0.6 | SIMD vectorization | additional 4–8× on numeric ops |
-| v0.7 | WASM target | browser + edge deployment |
+| v0.5 | Bytecode VM (register-based) | ~10× vs tree-walker |
+| v0.6 | Tracing JIT via Cranelift | ~50× on hot loops |
+| v0.7 | SIMD vectorization | additional 4–8× on numeric ops |
+| v0.8 | WASM target | browser + edge deployment |
 | v1.0 | LLVM native backend | near C-speed |
 
 The gradual type system is designed specifically with this roadmap in mind — typed code will receive full JIT specialization, eliminating polymorphic dispatch on numeric operations.
@@ -711,7 +770,8 @@ The gradual type system is designed specifically with this roadmap in mind — t
 node kai.js tests/basic.kai        # Core features
 node kai.js tests/typed.kai        # Type system
 node kai.js tests/type_errors.kai  # Type checker (shows warnings)
-node kai.js tests/controlflow.kai  # Control flow (NEW)
+node kai.js tests/controlflow.kai  # Control flow
+node kai.js tests/records.kai      # Records, mutation, while loops (NEW)
 ```
 
 ### Test Coverage
@@ -721,19 +781,14 @@ node kai.js tests/controlflow.kai  # Control flow (NEW)
 | `tests/basic.kai` | 140 | Variables, functions, closures, arrays, pipelines, strings, stats |
 | `tests/typed.kai` | 96 | Type annotations, inference, typed functions, typed arrays |
 | `tests/type_errors.kai` | 47 | Type mismatch detection, argument checking |
-| `tests/controlflow.kai` | 116 | If/else, for loops, nested loops, truthy values (NEW) |
+| `tests/controlflow.kai` | 116 | If/else, for loops, nested loops, truthy values |
+| `tests/records.kai` | 112 | Record literals, mutation (=), while loops, break, continue (NEW) |
 
-**Total:** 399 lines of test code covering all language features.
+**Total:** 511 lines of test code covering all language features.
 
 ---
 
 ## What's Next
-
-### v0.4.0 — Records & Mutation
-- Record/struct literals: `model := { layers: [64, 32], lr: 0.001 }`
-- Reassignment operator: `x = x + 1`
-- Nested record access: `model.layers.length`
-- Additional control flow: `while` loops, `break`, `continue`
 
 ### v0.5.0 — Bytecode VM
 - Register-based bytecode compiler
@@ -797,14 +852,16 @@ kai/
 │   ├── basic.kai        # Core language features
 │   ├── typed.kai        # Type system
 │   ├── type_errors.kai  # Type error examples
-│   └── controlflow.kai  # Control flow tests
+│   ├── controlflow.kai  # Control flow tests
+│   └── records.kai      # Record literals, mutation, while loops
 ├── images/
 │   ├── kai.png          # Logo
 │   └── kai.ico          # Icon
 └── RELEASE_NOTES/
     ├── v0.1.0.md        # Initial release
     ├── v0.2.0.md        # Type system
-    └── v0.3.0.md        # Control flow
+    ├── v0.3.0.md        # Control flow
+    └── v0.4.0.md        # Records & Mutation
 ```
 
 ---
@@ -832,7 +889,7 @@ MIT License — see LICENSE for details.
 
 **Built for the ML/AI community**
 
-v0.3.0 — Control Flow Complete
+v0.4.0 — Records & Mutation Complete
 
 [GitHub](https://github.com/yourname/kai) · [Releases](https://github.com/yourname/kai/releases) · [Issues](https://github.com/yourname/kai/issues)
 

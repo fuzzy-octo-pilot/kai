@@ -1,6 +1,6 @@
 {
   "name": "kai",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Kai - A programming language for ML/AI development",
   "main": "kai.js",
   "bin": {
@@ -8,7 +8,12 @@
   },
   "scripts": {
     "test": "node kai.js tests/basic.kai",
-    "repl": "node kai.js"
+    "repl": "node kai.js",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:test": "vitepress build docs && npm run docs:link-check",
+    "docs:link-check": "markdown-link-check -c docs/.vitepress/link-check-config.json"
   },
   "keywords": [
     "programming-language",
@@ -21,5 +26,12 @@
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0",
+    "vue": "^3.4.0",
+    "markdown-link-check": "^3.12.0",
+    "typescript": "^5.3.0",
+    "@types/node": "^20.10.0"
   }
 }

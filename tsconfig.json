@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "jsx": "preserve",
+    "strict": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./docs/.vitepress/dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["docs/.vitepress/*"]
+    }
+  },
+  "include": [
+    "docs/.vitepress/**/*",
+    "docs/**/*.md"
+  ],
+  "exclude": [
+    "node_modules",
+    "docs/.vitepress/dist"
+  ]
+}

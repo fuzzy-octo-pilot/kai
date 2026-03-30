@@ -1,0 +1,111 @@
+# Kai Records & Mutation Test Suite
+# Tests record literals, mutation, and while loops
+
+print("=== Record Literals ===")
+
+# Simple record
+person := { name: "Alice", age: 30, city: "NYC" }
+print("Person:", person)
+print("Name:", person.name)
+print("Age:", person.age)
+print("City:", person.city)
+
+# Nested record
+model := {
+  layers: [64, 32, 10],
+  lr: 0.001,
+  epochs: 100,
+  config: { optimizer: "adam", beta1: 0.9 }
+}
+print("\nModel config:", model)
+print("Layers:", model.layers)
+print("Learning rate:", model.lr)
+print("Optimizer:", model.config.optimizer)
+
+print("\n=== Variable Mutation ===")
+
+# Variable reassignment
+x := 10
+print("Initial x:", x)
+x = x + 5
+print("After x = x + 5:", x)
+x = x * 2
+print("After x = x * 2:", x)
+
+print("\n=== Record Field Mutation ===")
+
+# Mutate record fields
+person.age = 31
+print("After person.age = 31:", person.age)
+
+model.lr = 0.01
+print("After model.lr = 0.01:", model.lr)
+
+model.config.optimizer = "sgd"
+print("After model.config.optimizer = 'sgd':", model.config.optimizer)
+
+print("\n=== While Loops ===")
+
+# Simple while loop
+count := 0
+while count < 5 {
+  print("Count:", count)
+  count = count + 1
+}
+
+print("Final count:", count)
+
+# While loop with break
+i := 0
+while i < 10 {
+  i = i + 1
+  if i == 5 {
+    print("Breaking at i =", i)
+    break
+  }
+  print("i =", i)
+}
+
+print("After break:", i)
+
+print("\n=== While with Continue ===")
+
+# While loop with continue
+j := 0
+while j < 5 {
+  j = j + 1
+  if j % 2 == 0 {
+    print("Skipping even j =", j)
+    continue
+  }
+  print("Odd j =", j)
+}
+
+print("\n=== Nested Records & Mutation ===")
+
+# Complex nested structure
+data := {
+  training: { samples: 1000, batch_size: 32 },
+  validation: { samples: 200, batch_size: 32 }
+}
+
+print("Initial data:", data)
+print("Training samples:", data.training.samples)
+
+# Mutate nested values
+data.training.samples = 1200
+data.validation.batch_size = 64
+
+print("After mutation:", data)
+
+print("\n=== While with Records ===")
+
+# Countdown using while and records
+counter := { value: 5 }
+while counter.value > 0 {
+  print("Countdown:", counter.value)
+  counter.value = counter.value - 1
+}
+print("Liftoff!")
+
+print("\n=== All records tests passed! ===")

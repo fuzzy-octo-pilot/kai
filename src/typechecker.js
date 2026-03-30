@@ -183,6 +183,8 @@ class TypeChecker {
         return T_NULL;
       case 'ArrayLiteral':
         return this.checkArrayLiteral(node, env);
+      case 'RecordLiteral':
+        return this.checkRecordLiteral(node, env);
       case 'Identifier':
         return this.checkIdentifier(node, env);
       case 'BinaryExpr':
@@ -191,6 +193,8 @@ class TypeChecker {
         return this.checkUnaryExpr(node, env);
       case 'AssignStmt':
         return this.checkAssignStmt(node, env);
+      case 'AssignExpr':
+        return this.checkAssignExpr(node, env);
       case 'FuncExpr':
         return this.checkFuncExpr(node, env);
       case 'CallExpr':
@@ -203,6 +207,12 @@ class TypeChecker {
         return this.checkReturnStmt(node, env);
       case 'PipeExpr':
         return this.checkPipeExpr(node, env);
+      case 'WhileLoop':
+        return this.checkWhileLoop(node, env);
+      case 'BreakStmt':
+        return T_VOID;
+      case 'ContinueStmt':
+        return T_VOID;
       default:
         return T_ANY;
     }
@@ -436,6 +446,14 @@ class TypeChecker {
       }
     }
 
+    // Record property access (v0.4.0)
+    // For now, we can't type check precise field types without structural typing
+    // Just return T_ANY
+    if (objType === T_ANY) {
+      node._type = T_ANY;
+      return T_ANY;
+    }
+
     node._type = T_ANY;
     return T_ANY;
   }
@@ -481,6 +499,70 @@ class TypeChecker {
 
     node._type = T_ANY;
     return T_ANY;
+  }
+
+  /**
+   * Type check record literals (v0.4.0)
+   * Records have structural typing - we infer the type from fields
+   */
+  checkRecordLiteral(node, env) {
+    // For now, records are always T_ANY (structural typing is complex)
+    // In a full implementation, we'd track field types
+    node._type = T_ANY;
+    return T_ANY;
+  }
+
+  /**
+   * Type check mutation expressions (v0.4.0)
+   * x = value or obj.prop = value
+   */
+  checkAssignExpr(node, env) {
+    const valueType = this.checkNode(node.value, env);
+
+    // For variable mutation: x = value
+    if (node.target.type === 'Identifier') {
+      const varName = node.target.name;
+      if (env.has(varName)) {
+        const varType = env.get(varName);
+        if (!this.assignable(valueType, varType)) {
+          this.errors.push(new TypeError_(
+            node.value._line || 0,
+            node.value._column || 0,
+            `Cannot assign type ${valueType} to variable '${varName}' of type ${varType}`
+          ));
+        }
+      }
+      node._type = valueType;
+      return valueType;
+    }
+
+    // For member mutation: obj.prop = value
+    // We can't type check this precisely without tracking record types
+    // For now, just type check the value
+    node._type = valueType;
+    return valueType;
+  }
+
+  /**
+   * Type check while loops (v0.4.0)
+   */
+  checkWhileLoop(node, env) {
+    const condType = this.checkNode(node.cond, env);
+
+    // Condition should be boolean (or coercible to boolean)
+    if (condType !== T_BOOL && condType !== T_ANY && !condType.isNumeric()) {
+      this.errors.push(new TypeError_(
+        node.cond._line || 0,
+        node.cond._column || 0,
+        `While condition must be boolean, got ${condType}`
+      ));
+    }
+
+    // Type check body
+    this.checkNode(node.body, env);
+
+    node._type = T_VOID;
+    return T_VOID;
   }
 
   /**

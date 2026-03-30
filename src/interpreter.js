@@ -90,6 +90,25 @@ class Interpreter {
   }
 
   /**
+   * Ensure array contains only numeric values for arithmetic operations
+   * Throws error if array contains non-numeric elements
+   */
+  ensureNumericArray(arr, operation) {
+    if (!Array.isArray(arr)) {
+      throw new Error(`RuntimeError: ${operation} requires an array`);
+    }
+    for (let i = 0; i < arr.length; i++) {
+      const elem = arr[i];
+      if (typeof elem !== 'number' || isNaN(elem)) {
+        throw new Error(
+          `RuntimeError: ${operation} requires all array elements to be numeric. ` +
+          `Element at index ${i} is ${typeof elem}${typeof elem === 'string' ? ': ' + elem : ''}`
+        );
+      }
+    }
+  }
+
+  /**
    * Run a program AST node
    */
   run(ast) {
@@ -113,6 +132,9 @@ class Interpreter {
       case 'ArrayLiteral':
         return this.evalArrayLiteral(node, env);
 
+      case 'RecordLiteral':
+        return this.evalRecordLiteral(node, env);
+
       case 'Identifier':
         return env.get(node.name);
 
@@ -124,6 +146,9 @@ class Interpreter {
 
       case 'AssignStmt':
         return this.evalAssignStmt(node, env);
+
+      case 'AssignExpr':
+        return this.evalAssignExpr(node, env);
 
       case 'FuncExpr':
         return new KaiFunction(node.params, node.body, env);
@@ -142,6 +167,15 @@ class Interpreter {
 
       case 'ForLoop':
         return this.evalForLoop(node, env);
+
+      case 'WhileLoop':
+        return this.evalWhileLoop(node, env);
+
+      case 'BreakStmt':
+        throw new Error('BreakSignal');
+
+      case 'ContinueStmt':
+        throw new Error('ContinueSignal');
 
       case 'ReturnStmt':
         throw new ReturnSignal(node.value ? this.eval(node.value, env) : null);
@@ -164,6 +198,14 @@ class Interpreter {
 
   evalArrayLiteral(node, env) {
     return node.elements.map(el => this.eval(el, env));
+  }
+
+  evalRecordLiteral(node, env) {
+    const record = {};
+    for (const field of node.fields) {
+      record[field.key] = this.eval(field.value, env);
+    }
+    return record;
   }
 
   evalBinaryExpr(node, env) {
@@ -227,6 +269,33 @@ class Interpreter {
     return value;
   }
 
+  evalAssignExpr(node, env) {
+    const value = this.eval(node.value, env);
+    const target = node.target;
+
+    // Handle variable mutation: x = value
+    if (target.type === 'Identifier') {
+      env.set(target.name, value);
+      return value;
+    }
+
+    // Handle member mutation: obj.prop = value
+    if (target.type === 'MemberExpr') {
+      const obj = this.eval(target.obj, env);
+      const propName = target.prop;
+
+      // Check if object is a record
+      if (obj !== null && typeof obj === 'object' && !Array.isArray(obj)) {
+        obj[propName] = value;
+        return value;
+      }
+
+      throw new Error(`RuntimeError: Cannot mutate property '${propName}' on non-record object`);
+    }
+
+    throw new Error(`RuntimeError: Invalid mutation target`);
+  }
+
   evalIfExpr(node, env) {
     const cond = this.eval(node.cond, env);
 
@@ -252,6 +321,36 @@ class Interpreter {
       }
     } else {
       throw new Error(`RuntimeError: Cannot iterate over ${typeof iterable}`);
+    }
+
+    return result;
+  }
+
+  evalWhileLoop(node, env) {
+    let result = null;
+
+    while (true) {
+      // Check condition
+      const cond = this.eval(node.cond, env);
+
+      // Treat non-null, non-zero, non-false as truthy
+      if (!cond) {
+        break;
+      }
+
+      // Execute body
+      try {
+        result = this.eval(node.body, env);
+      } catch (e) {
+        // Handle break/continue
+        if (e.message === 'BreakSignal') {
+          break;
+        }
+        if (e.message === 'ContinueSignal') {
+          continue;
+        }
+        throw e;
+      }
     }
 
     return result;
@@ -283,6 +382,14 @@ class Interpreter {
     // String methods
     if (typeof obj === 'string') {
       return this.evalStringMethod(obj, node.prop, env);
+    }
+
+    // Record property access (v0.4.0)
+    if (obj !== null && typeof obj === 'object') {
+      if (!(node.prop in obj)) {
+        throw new Error(`RuntimeError: Record has no property '${node.prop}'`);
+      }
+      return obj[node.prop];
     }
 
     throw new Error(`RuntimeError: Type ${typeof obj} has no property '${node.prop}'`);
@@ -317,12 +424,16 @@ class Interpreter {
           return arr;
         };
       case 'sum':
+        this.ensureNumericArray(arr, 'sum');
         return arr.reduce((a, b) => a + b, 0);
       case 'mean':
+        this.ensureNumericArray(arr, 'mean');
         return arr.reduce((a, b) => a + b, 0) / arr.length;
       case 'min':
+        this.ensureNumericArray(arr, 'min');
         return Math.min(...arr);
       case 'max':
+        this.ensureNumericArray(arr, 'max');
         return Math.max(...arr);
       case 'length':
         return arr.length;
@@ -405,8 +516,14 @@ class Interpreter {
     const arrayFns = {
       len: arr => arr.length,
       range: (start, end) => Array.from({ length: end - start }, (_, i) => start + i),
-      sum: arr => arr.reduce((a, b) => a + b, 0),
-      mean: arr => arr.reduce((a, b) => a + b, 0) / arr.length,
+      sum: arr => {
+        this.ensureNumericArray(arr, 'sum');
+        return arr.reduce((a, b) => a + b, 0);
+      },
+      mean: arr => {
+        this.ensureNumericArray(arr, 'mean');
+        return arr.reduce((a, b) => a + b, 0) / arr.length;
+      },
       map: (arr, fn) => arr.map(fn),
       filter: (arr, fn) => arr.filter(fn),
       reduce: (arr, fn, init) => arr.reduce(fn, init),
@@ -423,19 +540,26 @@ class Interpreter {
     // Stats functions (ML-focused)
     const statsFns = {
       std: arr => {
+        this.ensureNumericArray(arr, 'std');
         const m = arr.reduce((a, b) => a + b, 0) / arr.length;
         return Math.sqrt(arr.reduce((sum, x) => sum + Math.pow(x - m, 2), 0) / arr.length);
       },
       variance: arr => {
+        this.ensureNumericArray(arr, 'variance');
         const m = arr.reduce((a, b) => a + b, 0) / arr.length;
         return arr.reduce((sum, x) => sum + Math.pow(x - m, 2), 0) / arr.length;
       },
       normalize: arr => {
+        this.ensureNumericArray(arr, 'normalize');
         const m = arr.reduce((a, b) => a + b, 0) / arr.length;
         const s = Math.sqrt(arr.reduce((sum, x) => sum + Math.pow(x - m, 2), 0) / arr.length);
         return arr.map(x => (x - m) / s);
       },
-      dot: (a, b) => a.reduce((sum, x, i) => sum + x * b[i], 0),
+      dot: (a, b) => {
+        this.ensureNumericArray(a, 'dot (first array)');
+        this.ensureNumericArray(b, 'dot (second array)');
+        return a.reduce((sum, x, i) => sum + x * b[i], 0);
+      },
     };
 
     // I/O functions
