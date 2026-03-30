@@ -1,0 +1,115 @@
+# Kai Control Flow Test Suite
+# Tests if/else statements and for loops
+
+print("=== If/Else Statements ===")
+
+# Simple if statement
+x := 10
+if x > 5 {
+  print("x is greater than 5")
+}
+
+# If/else statement
+y := 3
+if y > 5 {
+  print("y is greater than 5")
+} else {
+  print("y is not greater than 5")
+}
+
+# Nested if/else
+z := 15
+if z > 20 {
+  print("z is greater than 20")
+} else {
+  if z > 10 {
+    print("z is between 10 and 20")
+  } else {
+    print("z is 10 or less")
+  }
+}
+
+print("\n=== If with Boolean Expressions ===")
+
+flag := true
+if flag {
+  print("flag is true")
+}
+
+if !flag {
+  print("This should not print")
+} else {
+  print("flag is false (else branch)")
+}
+
+# Complex condition
+a := 5
+b := 10
+if a > 0 && b > 0 {
+  print("Both a and b are positive")
+}
+
+print("\n=== For Loops - Arrays ===")
+
+# Simple iteration
+nums := [1, 2, 3, 4, 5]
+print("Numbers:")
+for num in nums {
+  print("  ", num)
+}
+
+# Sum using for loop - use reduce instead
+sum := nums.reduce((acc, x) => acc + x, 0)
+print("Sum:", sum)
+
+# Collect squared values using map
+squared := nums.map(x => x * x)
+print("Squared:", squared)
+
+print("\n=== For Loops - String Arrays ===")
+
+words := ["hello", "world", "kai"]
+for word in words {
+  print("Word:", word, "length:", word.length)
+}
+
+print("\n=== For Loops with Filter ===")
+
+evens := nums.filter(x => x % 2 == 0)
+print("Even numbers:", evens)
+
+print("\n=== For Loops - Nested ===")
+
+matrix := [[1, 2], [3, 4], [5, 6]]
+print("Matrix:")
+for row in matrix {
+  print("  Row:", row)
+  for val in row {
+    print("    ", val)
+  }
+}
+
+print("\n=== For Loops with Functions ===")
+
+# Use map to double values
+doubled := nums.map(x => x * 2)
+print("Doubled:", doubled)
+
+print("\n=== Control Flow Combined ===")
+
+# Find maximum using max method
+maxVal := nums.max
+print("Maximum:", maxVal)
+
+# Count evens using filter and length
+evens := nums.filter(x => x % 2 == 0)
+count := evens.length
+print("Even count:", count)
+
+print("\n=== Range-like For Loop ===")
+
+# Using range function with map
+rangeResult := range(0, 5).map(x => x * 2)
+print("Range result:", rangeResult)
+
+print("\n=== All control flow tests passed! ===")

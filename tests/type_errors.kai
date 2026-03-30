@@ -1,0 +1,45 @@
+# Kai Type Error Test Suite
+# This file intentionally contains type errors to verify the type checker catches them
+
+print("=== Type Error Tests ===")
+
+print("\n1. Variable type mismatch - int declared as float")
+x: float := 42        # OK - int can be assigned to float (widening)
+
+print("\n2. String declared as int - should error")
+y: int := "hello"     # ERROR: String cannot be assigned to int
+
+print("\n3. Array type mismatch")
+nums: int[] := [1, 2, 3]
+print("nums:", nums)
+
+print("\n4. Wrong array element type")
+wrong: int[] := [1.5, 2.5, 3.5]  # ERROR: float[] assigned to int[]
+
+print("\n5. Function parameter type mismatch")
+add := (a: int, b: int): int => a + b
+print("add(5, 3):", add(5, 3))
+print("add(5.5, 3.5):", add(5.5, 3.5))  # ERROR: float passed to int parameter
+
+print("\n6. Function return type mismatch")
+badReturn := (x: int): str => x + 1  # ERROR: Returns int but declared as str
+
+print("\n7. Array element access")
+arr: int[] := [1, 2, 3]
+elem := arr[0]  # Should work (indexing not implemented yet, but should type check)
+
+print("\n8. Mixed operations")
+a: int := 10
+b: float := 3.5
+c := a + b  # OK - int + float = float
+
+print("\n9. Type inference with narrowing")
+d: float := 5  # OK - int literal can be assigned to float
+
+print("\n10. Function with wrong number of arguments")
+f := (x: int, y: int): int => x + y
+print("f(1, 2):", f(1, 2))
+print("f(1):", f(1))      # ERROR: Wrong number of arguments
+print("f(1, 2, 3):", f(1, 2, 3))  # ERROR: Wrong number of arguments
+
+print("\n=== End of type error tests ===")

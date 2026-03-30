@@ -1,0 +1,25 @@
+{
+  "name": "kai",
+  "version": "0.3.0",
+  "description": "Kai - A programming language for ML/AI development",
+  "main": "kai.js",
+  "bin": {
+    "kai": "./kai.js"
+  },
+  "scripts": {
+    "test": "node kai.js tests/basic.kai",
+    "repl": "node kai.js"
+  },
+  "keywords": [
+    "programming-language",
+    "ml",
+    "ai",
+    "jit",
+    "compiler"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

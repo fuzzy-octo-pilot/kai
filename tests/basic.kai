@@ -1,0 +1,140 @@
+# Kai Basic Test Suite
+# Tests all core language features
+
+print("=== Variables ===")
+x := 42
+pi := 3.14159
+name := "kai"
+flag := true
+nothing := null
+
+print("x:", x)
+print("pi:", pi)
+print("name:", name)
+print("flag:", flag)
+print("nothing:", nothing)
+
+print("\n=== Arithmetic ===")
+a := 10
+b := 3
+print("a + b:", a + b)
+print("a - b:", a - b)
+print("a * b:", a * b)
+print("a / b:", a / b)
+print("a % b:", a % b)
+
+print("\n=== Comparison ===")
+print("a == b:", a == b)
+print("a != b:", a != b)
+print("a > b:", a > b)
+print("a < b:", a < b)
+print("a >= b:", a >= b)
+print("a <= b:", a <= b)
+
+print("\n=== Logical ===")
+print("true && false:", true && false)
+print("true || false:", true || false)
+print("!true:", !true)
+
+print("\n=== Arrays ===")
+nums := [1, 2, 3, 4, 5]
+floats := [1.1, 2.2, 3.3, 4.4, 5.5]
+empty := []
+
+print("nums:", nums)
+print("floats:", floats)
+print("empty:", empty)
+print("len(nums):", len(nums))
+
+print("\n=== Array Methods ===")
+doubled := nums.map(x => x * 2)
+evens := nums.filter(x => (x % 2) == 0)
+sumVal := nums.sum
+meanVal := nums.mean
+minimum := nums.min
+maximum := nums.max
+
+print("doubled:", doubled)
+print("evens:", evens)
+print("sum:", sumVal)
+print("mean:", meanVal)
+print("min:", minimum)
+print("max:", maximum)
+
+print("\n=== Functions ===")
+add := (a, b) => a + b
+square := (n) => n * n
+greet := (name) => {
+  msg := "Hello, " + name
+  return msg
+}
+
+print("add(5, 3):", add(5, 3))
+print("square(4):", square(4))
+print("greet('Kai'):", greet("Kai"))
+
+print("\n=== Closures ===")
+makeAdder := n => x => x + n
+add10 := makeAdder(10)
+add100 := makeAdder(100)
+
+print("add10(5):", add10(5))
+print("add100(5):", add100(5))
+
+print("\n=== Math Functions ===")
+print("abs(-5):", abs(-5))
+print("sqrt(16):", sqrt(16))
+print("pow(2, 8):", pow(2, 8))
+print("floor(3.7):", floor(3.7))
+print("ceil(3.2):", ceil(3.2))
+print("round(3.5):", round(3.5))
+print("PI:", PI)
+print("E:", E)
+
+print("\n=== Array Functions ===")
+print("range(0, 5):", range(0, 5))
+print("reverse(nums):", reverse(nums))
+print("sort([3,1,4,1,5]):", sort([3, 1, 4, 1, 5]))
+print("unique([1,2,2,3,3,3]):", unique([1, 2, 2, 3, 3, 3]))
+print("includes(nums, 3):", includes(nums, 3))
+print("head(nums):", head(nums))
+print("tail(nums):", tail(nums))
+
+print("\n=== Stats Functions (ML-focused) ===")
+data := [2.1, 3.5, 2.8, 4.2, 3.1]
+print("data:", data)
+print("mean(data):", mean(data))
+print("std(data):", std(data))
+print("variance(data):", variance(data))
+print("normalize(data):", normalize(data))
+print("dot([1,2,3], [4,5,6]):", dot([1, 2, 3], [4, 5, 6]))
+
+print("\n=== String Methods ===")
+text := "  Hello Kai  "
+print("text.trim():", text.trim())
+print("text.upper():", text.upper())
+print("text.lower():", text.lower())
+print("text.split(' '):", text.split(" "))
+print("text.includes('Kai'):", text.includes("Kai"))
+print("text.length:", text.length)
+
+print("\n=== Pipeline Operator ===")
+result := data |> normalize |> mean
+print("data |> normalize |> mean:", result)
+
+pipelineAdd := (x) => x + 10
+pipelineMul := (x) => x * 2
+pipelineResult := 5 |> pipelineAdd |> pipelineMul
+print("5 |> add10 |> double:", pipelineResult)
+
+print("\n=== Reduce ===")
+sumReduce := nums.reduce((acc, x) => acc + x, 0)
+factorial := [1, 2, 3, 4, 5].reduce((acc, x) => acc * x, 1)
+print("nums.reduce((acc, x) => acc + x, 0):", sumReduce)
+print("[1,2,3,4,5].reduce((acc, x) => acc * x, 1):", factorial)
+
+print("\n=== Zip ===")
+zipped := zip([1, 2, 3], ["a", "b", "c"])
+print("zip([1,2,3], ['a','b','c']):", zipped)
+
+print("\n=== All tests passed! ===")

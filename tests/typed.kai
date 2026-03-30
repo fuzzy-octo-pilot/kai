@@ -1,0 +1,96 @@
+# Kai Type System Test Suite
+# Tests type annotations and type inference
+
+print("=== Type Annotations ===")
+
+# Typed variables
+x: int := 42
+pi: float := 3.14159
+name: str := "Kai"
+flag: bool := true
+nums: int[] := [1, 2, 3, 4, 5]
+floats: float[] := [1.1, 2.2, 3.3]
+
+print("x:", x)
+print("pi:", pi)
+print("name:", name)
+print("nums:", nums)
+
+print("\n=== Type Inference ===")
+
+# Untyped variables - type inferred from value
+a := 10        # Inferred as int
+b := 3.14      # Inferred as float
+c := a + b     # Inferred as float (int + float = float)
+d := "hello"   # Inferred as str
+e := [1, 2]    # Inferred as int[]
+
+print("a:", a, "(int)")
+print("b:", b, "(float)")
+print("c:", c, "(float)")
+print("d:", d, "(str)")
+print("e:", e, "(int[])")
+
+print("\n=== Typed Functions ===")
+
+# Function with type annotations
+add := (a: float, b: float): float => a + b
+square := (n: float): float => n * n
+greet := (name: str): str => {
+  msg := "Hello, " + name
+  return msg
+}
+
+print("add(3.5, 2.5):", add(3.5, 2.5))
+print("square(4.0):", square(4.0))
+print("greet('Kai'):", greet("Kai"))
+
+print("\n=== Untyped Functions ===")
+
+# Untyped functions - types inferred
+double := x => x * 2
+isPositive := n => n > 0
+
+print("double(5):", double(5))
+print("isPositive(-3):", isPositive(-3))
+
+print("\n=== Array Type Inference ===")
+
+# Homogeneous array
+intArray := [1, 2, 3]
+floatArray := [1.0, 2.0, 3.0]
+strArray := ["a", "b", "c"]
+
+print("intArray:", intArray, "(int[])")
+print("floatArray:", floatArray, "(float[])")
+print("strArray:", strArray, "(str[])")
+
+print("\n=== Mixed Arrays ===")
+
+# Mixed type array - inferred as any[]
+mixed := [1, 2.5, "hello"]
+print("mixed:", mixed, "(any[])")
+
+print("\n=== Function Return Type Inference ===")
+
+# Function without return annotation - type inferred
+identity := x => x
+print("identity(42):", identity(42))
+print("identity('hello'):", identity("hello"))
+
+print("\n=== Higher-Order Functions ===")
+
+# Functions taking functions (using 'any' for function parameters)
+apply := (f: any, x: int): int => f(x)
+increment := x => x + 1
+
+print("apply(increment, 5):", apply(increment, 5))
+
+print("\n=== Pipeline Operator ===")
+
+# Pipeline with typed functions
+normalize := (data: float[]): float[] => data.map((x: float) => x / 2.0)
+result := [2.0, 4.0, 6.0] |> normalize
+print("result:", result)
+
+print("\n=== All typed tests passed! ===")
