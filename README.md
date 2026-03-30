@@ -738,9 +738,26 @@ print("5! = " + factorial(5))  # 120
 
 ## Performance
 
-### Current Implementation (v0.4)
+### Current Implementation (v0.5)
 
-Kai uses a **tree-walking interpreter** — the focus right now is on correctness and language design, not raw speed. It is suitable for scripts, data exploration, and prototyping.
+Kai currently supports **two execution engines**:
+
+1. **Tree-walking interpreter** (v0.4, production-ready)
+   - Correct execution with full language feature support
+   - Suitable for scripts, data exploration, and prototyping
+
+2. **Bytecode VM** (v0.5, in development)
+   - Register-based virtual machine with ~10× performance target
+   - Currently supports: expressions, variables, if/else statements
+   - **Status:** Phase 5.1 complete (75%), while loops have known bugs
+   - **Usage:** Run with `kai --vm file.kai` to test the VM
+
+**To use the bytecode VM:**
+```bash
+kai --vm myfile.kai    # Use VM instead of interpreter
+```
+
+**Note:** The VM will automatically fall back to the interpreter if it encounters unsupported features (like function calls or complex control flow).
 
 **Control flow overhead:**
 - If statements: ~5ns overhead (branch prediction friendly)
@@ -750,13 +767,13 @@ Kai uses a **tree-walking interpreter** — the focus right now is on correctnes
 
 ### Performance Roadmap
 
-| Version | Feature | Expected Speedup |
-|---|---|---|
-| v0.5 | Bytecode VM (register-based) | ~10× vs tree-walker |
-| v0.6 | Tracing JIT via Cranelift | ~50× on hot loops |
-| v0.7 | SIMD vectorization | additional 4–8× on numeric ops |
-| v0.8 | WASM target | browser + edge deployment |
-| v1.0 | LLVM native backend | near C-speed |
+| Version | Feature | Expected Speedup | Status |
+|---|---|---|---|
+| v0.5 | Bytecode VM (register-based) | ~10× vs tree-walker | 🚧 In Development (75%) |
+| v0.6 | Tracing JIT via Cranelift | ~50× on hot loops | Planned |
+| v0.7 | SIMD vectorization | additional 4–8× on numeric ops | Planned |
+| v0.8 | WASM target | browser + edge deployment | Planned |
+| v1.0 | LLVM native backend | near C-speed | Planned |
 
 The gradual type system is designed specifically with this roadmap in mind — typed code will receive full JIT specialization, eliminating polymorphic dispatch on numeric operations.
 
