@@ -21,14 +21,6 @@
   {% endif %}
 {% endif %}
 
-{% if computed_cover == blank and site.vintage_images.size > 0 %}
-  {% assign slug_seed = include.post.slug | size | times: 13 %}
-  {% assign date_seed = include.post.date | date: '%Y%m%d' | plus: 0 %}
-  {% assign path_seed = include.post.url | size | times: 17 %}
-  {% assign fallback_index = slug_seed | plus: date_seed | plus: path_seed | modulo: site.vintage_images.size %}
-  {% assign computed_cover = site.vintage_images[fallback_index] %}
-{% endif %}
-
 {% assign cover_src = computed_cover %}
 {% if cover_src %}
   {% unless cover_src contains '://' %}
@@ -40,37 +32,35 @@
 {% if computed_excerpt == blank %}
   {% assign computed_excerpt = include.post.content | strip_html | normalize_whitespace %}
 {% endif %}
-{% assign computed_excerpt = computed_excerpt | truncate: 180 %}
+{% assign computed_excerpt = computed_excerpt | truncate: 140 %}
 
-<article class="post-card" data-tags="{% for tag in post_tags %}{{ tag | slugify }} {% endfor %}">
-  <a class="post-card__media" href="{{ include.post.url | relative_url }}">
-    {% if cover_src %}
-      <img src="{{ cover_src }}" alt="" loading="lazy">
-      <div class="post-card__overlay"></div>
-    {% endif %}
-  </a>
-
-  <div class="post-card__body">
-    <div class="post-card__meta">
-      <span>{{ include.post.date | date: "%b %-d, %Y" }}</span>
-      <span>{{ include.post.content | number_of_words | divided_by: 220.0 | ceil }} min read</span>
+<article class="post-preview" data-tags="{% for tag in post_tags %}{{ tag | slugify }} {% endfor %}">
+  <div class="post-preview__content">
+    <div class="post-preview__meta">
+      <span class="post-preview__author">{{ include.post.author | default: "Kai Team" }}</span>
+      <span class="post-preview__dot">·</span>
+      <span class="post-preview__date">{{ include.post.date | date: "%b %-d, %Y" }}</span>
     </div>
 
-    <h2><a href="{{ include.post.url | relative_url }}">{{ include.post.title }}</a></h2>
+    <h2 class="post-preview__title">
+      <a href="{{ include.post.url | relative_url }}">{{ include.post.title }}</a>
+    </h2>
 
-    <p class="post-card__author">{{ include.post.author | default: "Kai Team" }}</p>
-    <p class="post-card__excerpt">{{ computed_excerpt }}</p>
+    <p class="post-preview__excerpt">{{ computed_excerpt }}</p>
 
-    <div class="post-card__footer">
-      <div class="badge-row">
+    <div class="post-preview__footer">
+      <div class="post-preview__tags">
         {% for tag in post_tags %}
-          <span class="badge">{{ tag }}</span>
+          <span class="post-preview__tag">{{ tag }}</span>
         {% endfor %}
-        {% if include.post.notion_link %}
-          <a class="badge badge--notion" href="{{ include.post.notion_link }}">N Notion</a>
-        {% endif %}
       </div>
-      <a class="read-more" href="{{ include.post.url | relative_url }}">Read more -></a>
+      <span class="post-preview__reading-time">{{ include.post.content | number_of_words | divided_by: 220.0 | ceil }} min read</span>
     </div>
   </div>
+
+  {% if cover_src %}
+    <a class="post-preview__media" href="{{ include.post.url | relative_url }}">
+      <img src="{{ cover_src }}" alt="" loading="lazy">
+    </a>
+  {% endif %}
 </article>

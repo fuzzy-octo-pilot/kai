@@ -1,6 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("theme-toggle");
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      const isDark = document.documentElement.classList.contains("dark-mode");
+      if (isDark) {
+        document.documentElement.classList.remove("dark-mode");
+        document.documentElement.classList.add("light-mode");
+        localStorage.setItem("theme", "light");
+      } else {
+        document.documentElement.classList.add("dark-mode");
+        document.documentElement.classList.remove("light-mode");
+        localStorage.setItem("theme", "dark");
+      }
+    });
+  }
+
   const chips = Array.from(document.querySelectorAll("[data-filter]"));
-  const cards = Array.from(document.querySelectorAll(".post-card"));
+  const cards = Array.from(document.querySelectorAll(".post-preview"));
 
   if (chips.length && cards.length) {
     chips.forEach((chip) => {

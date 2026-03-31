@@ -41,37 +41,30 @@ layout: default
 
 <article class="post-page">
   <header class="post-hero">
-    {% if cover_src %}
-      <div class="post-hero__media">
-        <img src="{{ cover_src }}" alt="" loading="eager">
-        <div class="post-hero__overlay"></div>
-      </div>
-    {% endif %}
-
     <div class="post-hero__content">
-      <p class="eyebrow">Blog Post</p>
       <h1>{{ page.title }}</h1>
       <div class="post-meta">
-        <span>{{ page.date | date: "%b %-d, %Y" }}</span>
-        <span>{{ page.author | default: "Kai Team" }}</span>
-        <span>{{ page.content | number_of_words | divided_by: 220.0 | ceil }} min read</span>
+        <span class="post-author">{{ page.author | default: "Kai Team" }}</span>
+        <span class="post-dot">·</span>
+        <span class="post-date">{{ page.date | date: "%b %-d, %Y" }}</span>
+        <span class="post-dot">·</span>
+        <span class="post-read-time">{{ page.content | number_of_words | divided_by: 220.0 | ceil }} min read</span>
       </div>
 
       {% if post_tags.size > 0 %}
-        <div class="badge-row">
+        <div class="post-tags">
           {% for tag in post_tags %}
-            <span class="badge">{{ tag }}</span>
+            <span class="post-tag">{{ tag }}</span>
           {% endfor %}
         </div>
       {% endif %}
-
-      <div class="post-actions">
-        {% if page.notion_link %}
-          <a class="badge badge--notion" href="{{ page.notion_link }}">N Originally published on Notion</a>
-        {% endif %}
-        <a class="subtle-link" href="{{ site.edit_base_url }}{{ page.path }}">Edit on GitHub</a>
-      </div>
     </div>
+
+    {% if cover_src %}
+      <div class="post-hero__media">
+        <img src="{{ cover_src }}" alt="" loading="eager">
+      </div>
+    {% endif %}
   </header>
 
   <div class="post-body prose">
@@ -79,12 +72,18 @@ layout: default
   </div>
 
   <footer class="post-footer">
+    <div class="post-actions">
+      {% if page.notion_link %}
+        <a class="badge badge--notion" href="{{ page.notion_link }}">N Published on Notion</a>
+      {% endif %}
+      <a class="subtle-link" href="{{ site.edit_base_url }}{{ page.path }}">Edit on GitHub</a>
+    </div>
+
     {% assign share_url = page.url | absolute_url | url_encode %}
     {% assign share_title = page.title | url_encode %}
     <div class="share-links">
       <a href="https://twitter.com/intent/tweet?url={{ share_url }}&text={{ share_title }}">Share on X</a>
-      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ share_url }}">Share on LinkedIn</a>
-      <a href="https://news.ycombinator.com/submitlink?u={{ share_url }}&t={{ share_title }}">Share on Hacker News</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ share_url }}">LinkedIn</a>
     </div>
   </footer>
 </article>
