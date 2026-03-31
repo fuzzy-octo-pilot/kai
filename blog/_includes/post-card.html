@@ -28,39 +28,29 @@
   {% endunless %}
 {% endif %}
 
-{% assign computed_excerpt = include.post.excerpt %}
-{% if computed_excerpt == blank %}
-  {% assign computed_excerpt = include.post.content | strip_html | normalize_whitespace %}
-{% endif %}
-{% assign computed_excerpt = computed_excerpt | truncate: 140 %}
-
-<article class="post-preview" data-tags="{% for tag in post_tags %}{{ tag | slugify }} {% endfor %}">
-  <div class="post-preview__content">
-    <div class="post-preview__meta">
-      <span class="post-preview__author">{{ include.post.author | default: "Kai Team" }}</span>
-      <span class="post-preview__dot">·</span>
-      <span class="post-preview__date">{{ include.post.date | date: "%b %-d, %Y" }}</span>
-    </div>
-
-    <h2 class="post-preview__title">
-      <a href="{{ include.post.url | relative_url }}">{{ include.post.title }}</a>
-    </h2>
-
-    <p class="post-preview__excerpt">{{ computed_excerpt }}</p>
-
-    <div class="post-preview__footer">
-      <div class="post-preview__tags">
-        {% for tag in post_tags %}
-          <span class="post-preview__tag">{{ tag }}</span>
-        {% endfor %}
+<article class="notion-card" data-tags="{% for tag in post_tags %}{{ tag | slugify }} {% endfor %}">
+  <a href="{{ include.post.url | relative_url }}" class="notion-card__link">
+    {% if cover_src %}
+      <div class="notion-card__cover">
+        <img src="{{ cover_src }}" alt="" loading="lazy">
       </div>
-      <span class="post-preview__reading-time">{{ include.post.content | number_of_words | divided_by: 220.0 | ceil }} min read</span>
-    </div>
-  </div>
+    {% else %}
+      <div class="notion-card__cover notion-card__cover--empty"></div>
+    {% endif %}
 
-  {% if cover_src %}
-    <a class="post-preview__media" href="{{ include.post.url | relative_url }}">
-      <img src="{{ cover_src }}" alt="" loading="lazy">
-    </a>
-  {% endif %}
+    <div class="notion-card__body">
+      <h2 class="notion-card__title">{{ include.post.title }}</h2>
+      
+      <div class="notion-card__meta">
+        <span class="notion-card__date">{{ include.post.date | date: "%b %-d, %Y" }}</span>
+        {% if post_tags.size > 0 %}
+          <div class="notion-card__tags">
+            {% for tag in post_tags %}
+              <span class="notion-card__tag">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </a>
 </article>

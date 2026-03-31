@@ -8,8 +8,7 @@ layout: default
 
 <section class="home-intro">
   <div class="home-intro__copy">
-    <h1 class="home-title">Kai Blog</h1>
-    <p class="home-subtitle">{{ site.blog_tagline }}</p>
+    <h1 class="home-title">Recent</h1>
   </div>
 </section>
 
@@ -24,8 +23,9 @@ layout: default
   </section>
 {% endif %}
 
-<section class="post-list" aria-label="Latest posts">
+<section class="notion-grid" aria-label="Latest posts">
   {% for post in site.posts %}
     {% include post-card.html post=post %}
   {% endfor %}
 </section>
+

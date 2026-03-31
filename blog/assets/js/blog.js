@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const chips = Array.from(document.querySelectorAll("[data-filter]"));
-  const cards = Array.from(document.querySelectorAll(".post-preview"));
+  const cards = Array.from(document.querySelectorAll(".notion-card"));
 
   if (chips.length && cards.length) {
     chips.forEach((chip) => {
