@@ -1,0 +1,76 @@
+{% assign post_tags = include.post.tags | default: empty %}
+{% assign computed_cover = include.post.cover_image %}
+
+{% if computed_cover == blank and include.post.notion_link and site.data.notion_covers[include.post.slug] %}
+  {% assign computed_cover = site.data.notion_covers[include.post.slug] %}
+{% endif %}
+
+{% if computed_cover == blank and include.post.content contains '<img' %}
+  {% assign image_parts = include.post.content | split: 'src="' %}
+  {% if image_parts.size > 1 %}
+    {% assign src_tail = image_parts[1] | split: '"' %}
+    {% assign computed_cover = src_tail[0] %}
+  {% endif %}
+{% endif %}
+
+{% if computed_cover == blank and include.post.content contains '![' %}
+  {% assign markdown_parts = include.post.content | split: '](' %}
+  {% if markdown_parts.size > 1 %}
+    {% assign markdown_tail = markdown_parts[1] | split: ')' %}
+    {% assign computed_cover = markdown_tail[0] %}
+  {% endif %}
+{% endif %}
+
+{% if computed_cover == blank and site.vintage_images.size > 0 %}
+  {% assign slug_seed = include.post.slug | size | times: 13 %}
+  {% assign date_seed = include.post.date | date: '%Y%m%d' | plus: 0 %}
+  {% assign path_seed = include.post.url | size | times: 17 %}
+  {% assign fallback_index = slug_seed | plus: date_seed | plus: path_seed | modulo: site.vintage_images.size %}
+  {% assign computed_cover = site.vintage_images[fallback_index] %}
+{% endif %}
+
+{% assign cover_src = computed_cover %}
+{% if cover_src %}
+  {% unless cover_src contains '://' %}
+  {% assign cover_src = cover_src | relative_url %}
+  {% endunless %}
+{% endif %}
+
+{% assign computed_excerpt = include.post.excerpt %}
+{% if computed_excerpt == blank %}
+  {% assign computed_excerpt = include.post.content | strip_html | normalize_whitespace %}
+{% endif %}
+{% assign computed_excerpt = computed_excerpt | truncate: 180 %}
+
+<article class="post-card" data-tags="{% for tag in post_tags %}{{ tag | slugify }} {% endfor %}">
+  <a class="post-card__media" href="{{ include.post.url | relative_url }}">
+    {% if cover_src %}
+      <img src="{{ cover_src }}" alt="" loading="lazy">
+      <div class="post-card__overlay"></div>
+    {% endif %}
+  </a>
+
+  <div class="post-card__body">
+    <div class="post-card__meta">
+      <span>{{ include.post.date | date: "%b %-d, %Y" }}</span>
+      <span>{{ include.post.content | number_of_words | divided_by: 220.0 | ceil }} min read</span>
+    </div>
+
+    <h2><a href="{{ include.post.url | relative_url }}">{{ include.post.title }}</a></h2>
+
+    <p class="post-card__author">{{ include.post.author | default: "Kai Team" }}</p>
+    <p class="post-card__excerpt">{{ computed_excerpt }}</p>
+
+    <div class="post-card__footer">
+      <div class="badge-row">
+        {% for tag in post_tags %}
+          <span class="badge">{{ tag }}</span>
+        {% endfor %}
+        {% if include.post.notion_link %}
+          <a class="badge badge--notion" href="{{ include.post.notion_link }}">N Notion</a>
+        {% endif %}
+      </div>
+      <a class="read-more" href="{{ include.post.url | relative_url }}">Read more -></a>
+    </div>
+  </div>
+</article>

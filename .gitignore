@@ -45,6 +45,7 @@ jspm_packages/
 web_modules/
 
 .claude/
+.codex
 
 # TypeScript cache
 *.tsbuildinfo
@@ -93,6 +94,11 @@ dist
 
 # vuepress build output
 .vuepress/dist
+
+# jekyll build output
+_site
+.jekyll-cache
+.jekyll-metadata
 
 # vuepress v2.x temp and cache directory
 .temp

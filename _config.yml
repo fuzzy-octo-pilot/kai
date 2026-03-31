@@ -1,0 +1,76 @@
+title: Kai Blog
+description: Notes on building Kai, language design tradeoffs, and experiments around ML-first tooling.
+lang: en-US
+url: https://xeron.github.io
+baseurl: ""
+permalink: /:year/:month/:day/:title/
+timezone: Asia/Dhaka
+markdown: kramdown
+kramdown:
+  input: GFM
+sass:
+  style: compressed
+
+repository_url: https://github.com/xeron/kai
+edit_base_url: https://github.com/xeron/kai/edit/main/
+docs_path: /docs/
+blog_tagline: Engineering notes, release stories, and design decisions behind Kai.
+vintage_images:
+  - https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1449495169669-7b118f960251?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1455885666463-9d8f0781e1f7?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1457694587812-e8bf29a43845?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1470163395405-d2b80e7450ed?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1484417894907-623942c8ee29?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80
+  - https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=80
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: Kai Team
+
+exclude:
+  - node_modules
+  - package.json
+  - package-lock.json
+  - Gemfile
+  - Gemfile.lock
+  - scripts
+  - src
+  - tests
+  - docs
+  - documentation
+  - README.md
+  - CHANGELOG.md
+  - ROADMAP.md
+  - PHASE_5.2_SUMMARY.md
+  - PHASE_5.3_ROADMAP.md
+  - blogweb_plan.md
+  - benchmark.js
+  - benchmark.sh
+  - debug_vm.js
+  - kai.js
+  - tsconfig.json
+  - .github
+  - .claude
+  - .codex

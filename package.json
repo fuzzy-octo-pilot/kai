@@ -1,7 +1,7 @@
 {
   "name": "kai",
   "version": "0.5.1",
-  "description": "Kai - A programming language for ML/AI development",
+  "description": "Kai - A programming language for ML/AI development with bytecode VM (263× faster)",
   "main": "kai.js",
   "bin": {
     "kai": "./kai.js"
@@ -9,11 +9,13 @@
   "scripts": {
     "test": "node kai.js tests/basic.kai",
     "repl": "node kai.js",
+    "blog:build": "bundle exec jekyll build",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "docs:test": "vitepress build docs && npm run docs:link-check",
-    "docs:link-check": "markdown-link-check -c docs/.vitepress/link-check-config.json"
+    "docs:link-check": "markdown-link-check -c docs/.vitepress/link-check-config.json",
+    "site:merge": "node scripts/build-pages.mjs"
   },
   "keywords": [
     "programming-language",

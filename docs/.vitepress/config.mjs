@@ -1,10 +1,12 @@
 import { defineConfig } from 'vitepress'
 
+const docsBase = process.env.KAI_DOCS_BASE || '/docs/'
+
 export default defineConfig({
   title: 'Kai Language',
   description: 'A minimal, elegant programming language for ML/AI development',
   lang: 'en-US',
-  base: '/kai/',
+  base: docsBase,
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#3c8772' }],
@@ -127,7 +129,7 @@ export default defineConfig({
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2024-present Kai Language Contributors'
+      copyright: 'Copyright © 2026-present Kai Language Contributors'
     },
 
     editLink: {

@@ -1,0 +1,39 @@
+---
+layout: default
+---
+<section class="hero">
+  <div class="hero__copy">
+    <p class="eyebrow">Kai Journal</p>
+    <h1>Drop in a Markdown file. The blog does the rest.</h1>
+    <p class="hero__lede">{{ site.blog_tagline }}</p>
+    <div class="hero__actions">
+      <a class="button button--primary" href="{{ site.docs_path | relative_url }}">Read the docs</a>
+      <a class="button button--ghost" href="{{ site.repository_url }}">View source</a>
+    </div>
+  </div>
+  <aside class="hero__panel">
+    <p class="hero__panel-label">Publishing flow</p>
+    <ol class="hero__list">
+      <li>Create `_posts/YYYY-MM-DD-title.md`</li>
+      <li>Add front matter and Markdown content</li>
+      <li>Push and publish to GitHub Pages</li>
+    </ol>
+  </aside>
+</section>
+
+{% assign sorted_tags = site.tags | sort %}
+{% if sorted_tags.size > 0 %}
+  <section class="filters" aria-label="Filter posts by tag">
+    <button class="filter-chip is-active" type="button" data-filter="all">All posts</button>
+    {% for tag_entry in sorted_tags %}
+      {% assign tag_name = tag_entry | first %}
+      <button class="filter-chip" type="button" data-filter="{{ tag_name | slugify }}">{{ tag_name }}</button>
+    {% endfor %}
+  </section>
+{% endif %}
+
+<section class="post-grid" aria-label="Latest posts">
+  {% for post in site.posts %}
+    {% include post-card.html post=post %}
+  {% endfor %}
+</section>
