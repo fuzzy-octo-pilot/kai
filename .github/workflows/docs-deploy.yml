@@ -37,31 +37,35 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
-          bundler-cache: true
 
       - name: Resolve GitHub Pages base paths
         run: |
           repo_name="${GITHUB_REPOSITORY#*/}"
           owner_site="${GITHUB_REPOSITORY_OWNER}.github.io"
           if [ "$repo_name" = "$owner_site" ]; then
-            echo "JEKYLL_BASEURL=" >> "$GITHUB_ENV"
-            echo "KAI_DOCS_BASE=/docs/" >> "$GITHUB_ENV"
+            echo "BLOG_BASEURL=/blog" >> "$GITHUB_ENV"
+            echo "KAI_DOCS_BASE=/" >> "$GITHUB_ENV"
           else
-            echo "JEKYLL_BASEURL=/$repo_name" >> "$GITHUB_ENV"
-            echo "KAI_DOCS_BASE=/$repo_name/docs/" >> "$GITHUB_ENV"
+            echo "BLOG_BASEURL=/$repo_name/blog" >> "$GITHUB_ENV"
+            echo "KAI_DOCS_BASE=/$repo_name/" >> "$GITHUB_ENV"
           fi
 
       - name: Install dependencies
         run: npm ci --include=dev
 
-      - name: Build Jekyll blog
-        run: bundle exec jekyll build --baseurl "${JEKYLL_BASEURL}"
+      - name: Install blog gems
+        working-directory: blog
+        run: bundle install
 
       - name: Build documentation
         run: npm run docs:build
 
       - name: Merge docs into site artifact
         run: npm run site:merge
+
+      - name: Build Jekyll blog
+        working-directory: blog
+        run: bundle exec jekyll build --destination ../_site/blog --baseurl "${BLOG_BASEURL}"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

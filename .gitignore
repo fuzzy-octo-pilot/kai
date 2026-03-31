@@ -99,6 +99,8 @@ dist
 _site
 .jekyll-cache
 .jekyll-metadata
+blog/.jekyll-cache
+blog/.jekyll-metadata
 
 # vuepress v2.x temp and cache directory
 .temp

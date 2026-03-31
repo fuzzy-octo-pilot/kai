@@ -1,13 +1,18 @@
 ---
 layout: default
 ---
+{% assign docs_home = site.baseurl | replace: '/blog', '' %}
+{% if docs_home == '' %}
+  {% assign docs_home = '/' %}
+{% endif %}
+
 <section class="hero">
   <div class="hero__copy">
     <p class="eyebrow">Kai Journal</p>
     <h1>Drop in a Markdown file. The blog does the rest.</h1>
     <p class="hero__lede">{{ site.blog_tagline }}</p>
     <div class="hero__actions">
-      <a class="button button--primary" href="{{ site.docs_path | relative_url }}">Read the docs</a>
+      <a class="button button--primary" href="{{ docs_home }}">Read the docs</a>
       <a class="button button--ghost" href="{{ site.repository_url }}">View source</a>
     </div>
   </div>

@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitepress'
 
-const docsBase = process.env.KAI_DOCS_BASE || '/docs/'
+const docsBase = process.env.KAI_DOCS_BASE || '/'
 
 export default defineConfig({
   title: 'Kai Language',
@@ -24,7 +24,8 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/introduction' },
       { text: 'Tutorials', link: '/tutorials/learn-kai-with-tests' },
       { text: 'Reference', link: '/reference/stdlib' },
-      { text: 'Community', link: '/community/examples' }
+      { text: 'Community', link: '/community/examples' },
+      { text: 'Blog', link: '/blog/' }
     ],
 
     sidebar: {

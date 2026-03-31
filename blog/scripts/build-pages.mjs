@@ -4,7 +4,7 @@ import path from "node:path";
 const root = process.cwd();
 const siteDir = path.join(root, "_site");
 const docsDir = path.join(root, "docs", ".vitepress", "dist");
-const destination = path.join(siteDir, "docs");
+const destination = siteDir;
 
 async function ensureExists(target) {
   try {
@@ -31,8 +31,8 @@ async function copyDirectory(source, target) {
   }
 }
 
-await ensureExists(siteDir);
 await ensureExists(docsDir);
+await fs.mkdir(siteDir, { recursive: true });
 await fs.rm(destination, { recursive: true, force: true });
 await copyDirectory(docsDir, destination);
 

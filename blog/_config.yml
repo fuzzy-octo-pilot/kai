@@ -12,8 +12,7 @@ sass:
   style: compressed
 
 repository_url: https://github.com/xeron/kai
-edit_base_url: https://github.com/xeron/kai/edit/main/
-docs_path: /docs/
+edit_base_url: https://github.com/xeron/kai/edit/main/blog/
 blog_tagline: Engineering notes, release stories, and design decisions behind Kai.
 vintage_images:
   - https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1200&q=80
@@ -56,21 +55,3 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - scripts
-  - src
-  - tests
-  - docs
-  - documentation
-  - README.md
-  - CHANGELOG.md
-  - ROADMAP.md
-  - PHASE_5.2_SUMMARY.md
-  - PHASE_5.3_ROADMAP.md
-  - blogweb_plan.md
-  - benchmark.js
-  - benchmark.sh
-  - debug_vm.js
-  - kai.js
-  - tsconfig.json
-  - .github
-  - .claude
-  - .codex

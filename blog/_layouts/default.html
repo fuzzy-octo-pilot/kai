@@ -12,12 +12,17 @@
     <script defer src="{{ '/assets/js/blog.js' | relative_url }}"></script>
   </head>
   <body>
+    {% assign docs_home = site.baseurl | replace: '/blog', '' %}
+    {% if docs_home == '' %}
+      {% assign docs_home = '/' %}
+    {% endif %}
+
     <div class="site-shell">
       <header class="site-header">
         <a class="site-brand" href="{{ '/' | relative_url }}">Kai</a>
         <nav class="site-nav" aria-label="Primary">
           <a href="{{ '/' | relative_url }}">Blog</a>
-          <a href="{{ site.docs_path | relative_url }}">Docs</a>
+          <a href="{{ docs_home }}">Docs</a>
           <a href="{{ site.repository_url }}">GitHub</a>
         </nav>
       </header>
