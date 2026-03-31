@@ -39,51 +39,83 @@ layout: default
   {% endunless %}
 {% endif %}
 
-<article class="post-page">
-  <header class="post-hero">
-    <div class="post-hero__content">
-      <h1>{{ page.title }}</h1>
-      <div class="post-meta">
-        <span class="post-author">{{ page.author | default: "Kai Team" }}</span>
-        <span class="post-dot">·</span>
-        <span class="post-date">{{ page.date | date: "%b %-d, %Y" }}</span>
-        <span class="post-dot">·</span>
-        <span class="post-read-time">{{ page.content | number_of_words | divided_by: 220.0 | ceil }} min read</span>
-      </div>
+<article class="notion-page">
+  {% if cover_src %}
+    <div class="notion-page__cover">
+      <img src="{{ cover_src }}" alt="" loading="eager">
+    </div>
+  {% else %}
+    <div class="notion-page__cover-empty"></div>
+  {% endif %}
 
-      {% if post_tags.size > 0 %}
-        <div class="post-tags">
-          {% for tag in post_tags %}
-            <span class="post-tag">{{ tag }}</span>
-          {% endfor %}
+  <div class="notion-page__content">
+    <header class="notion-page__header">
+      <div class="notion-page__icon">
+        <span>📝</span>
+      </div>
+      
+      <h1 class="notion-page__title">{{ page.title }}</h1>
+
+      <div class="notion-page__properties">
+        <div class="notion-property">
+          <div class="notion-property__label">
+            <svg viewBox="0 0 14 14" width="14" height="14"><path d="M7 0C3.13401 0 0 3.13401 0 7C0 10.866 3.13401 14 7 14C10.866 14 14 10.866 14 7C14 3.13401 10.866 0 7 0ZM7 12.6C3.90721 12.6 1.4 10.0928 1.4 7C1.4 3.90721 3.90721 1.4 7 1.4C10.0928 1.4 12.6 3.90721 12.6 7C12.6 10.0928 10.0928 12.6 7 12.6ZM7.7 3.5H6.3V7.7H10.5V6.3H7.7V3.5Z" fill="currentColor"/></svg>
+            Date
+          </div>
+          <div class="notion-property__value">{{ page.date | date: "%B %-d, %Y" }}</div>
         </div>
-      {% endif %}
-    </div>
 
-    {% if cover_src %}
-      <div class="post-hero__media">
-        <img src="{{ cover_src }}" alt="" loading="eager">
+        <div class="notion-property">
+          <div class="notion-property__label">
+            <svg viewBox="0 0 14 14" width="14" height="14"><path d="M7 7C8.54639 7 9.8 5.74639 9.8 4.2C9.8 2.65361 8.54639 1.4 7 1.4C5.45361 1.4 4.2 2.65361 4.2 4.2C4.2 5.74639 5.45361 7 7 7ZM7 8.4C4.66667 8.4 0 9.56667 0 11.9V14H14V11.9C14 9.56667 9.33333 8.4 7 8.4Z" fill="currentColor"/></svg>
+            Author
+          </div>
+          <div class="notion-property__value">{{ page.author | default: "Kai Team" }}</div>
+        </div>
+
+        {% if post_tags.size > 0 %}
+          <div class="notion-property">
+            <div class="notion-property__label">
+              <svg viewBox="0 0 14 14" width="14" height="14"><path d="M13.51 7.42L7.42 1.33C7.16 1.07 6.8 0.92 6.42 0.92H1.42C0.65 0.92 0.02 1.55 0.02 2.32V7.32C0.02 7.7 0.17 8.06 0.43 8.32L6.52 14.41C6.78 14.67 7.14 14.82 7.52 14.82C7.9 14.82 8.26 14.67 8.52 14.41L13.51 9.42C13.77 9.16 13.92 8.8 13.92 8.42C13.92 8.04 13.77 7.68 13.51 7.42ZM3.17 5.17C2.56 5.17 2.07 4.68 2.07 4.07C2.07 3.46 2.56 2.97 3.17 2.97C3.78 2.97 4.27 3.46 4.27 4.07C4.27 4.68 3.78 5.17 3.17 5.17Z" fill="currentColor"/></svg>
+              Tags
+            </div>
+            <div class="notion-property__value">
+              <div class="notion-tags">
+                {% for tag in post_tags %}
+                  <span class="notion-tag">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="notion-property">
+          <div class="notion-property__label">
+            <svg viewBox="0 0 14 14" width="14" height="14"><path d="M12.6 0H1.4C0.63 0 0 0.63 0 1.4V12.6C0 13.37 0.63 14 1.4 14H12.6C13.37 14 14 13.37 14 12.6V1.4C14 0.63 13.37 0 12.6 0ZM12.6 12.6H1.4V1.4H12.6V12.6ZM3.5 10.5H10.5V9.1H3.5V10.5ZM3.5 7.7H10.5V6.3H3.5V7.7ZM3.5 4.9H10.5V3.5H3.5V4.9Z" fill="currentColor"/></svg>
+            Reading Time
+          </div>
+          <div class="notion-property__value">{{ page.content | number_of_words | divided_by: 220.0 | ceil }} min read</div>
+        </div>
       </div>
-    {% endif %}
-  </header>
+    </header>
 
-  <div class="post-body prose">
-    {{ content }}
+    <div class="notion-page__body prose">
+      {{ content }}
+    </div>
+
+    <footer class="notion-page__footer">
+      <div class="notion-page__actions">
+        {% if page.notion_link %}
+          <a class="notion-btn-subtle" href="{{ page.notion_link }}">
+            <svg viewBox="0 0 14 14" width="14" height="14"><path d="M12.6 12.6H1.4V1.4H7V0H1.4C0.63 0 0 0.63 0 1.4V12.6C0 13.37 0.63 14 1.4 14H12.6C13.37 14 14 13.37 14 12.6V7H12.6V12.6ZM8.4 0V1.4H11.6L4.74 8.26L5.74 9.26L12.6 2.4V5.6H14V0H8.4Z" fill="currentColor"/></svg>
+            Original on Notion
+          </a>
+        {% endif %}
+        <a class="notion-btn-subtle" href="{{ site.edit_base_url }}{{ page.path }}">
+          <svg viewBox="0 0 14 14" width="14" height="14"><path d="M0 11.1V14H2.9L11.4 5.5L8.5 2.6L0 11.1ZM13.7 3.2C14.1 2.8 14.1 2.2 13.7 1.8L12.2 0.3C11.8 -0.1 11.2 -0.1 10.8 0.3L9.6 1.5L12.5 4.4L13.7 3.2Z" fill="currentColor"/></svg>
+          Edit
+        </a>
+      </div>
+    </footer>
   </div>
-
-  <footer class="post-footer">
-    <div class="post-actions">
-      {% if page.notion_link %}
-        <a class="badge badge--notion" href="{{ page.notion_link }}">N Published on Notion</a>
-      {% endif %}
-      <a class="subtle-link" href="{{ site.edit_base_url }}{{ page.path }}">Edit on GitHub</a>
-    </div>
-
-    {% assign share_url = page.url | absolute_url | url_encode %}
-    {% assign share_title = page.title | url_encode %}
-    <div class="share-links">
-      <a href="https://twitter.com/intent/tweet?url={{ share_url }}&text={{ share_title }}">Share on X</a>
-      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ share_url }}">LinkedIn</a>
-    </div>
-  </footer>
 </article>
