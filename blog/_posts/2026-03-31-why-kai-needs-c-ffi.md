@@ -4,7 +4,7 @@ date: 2026-03-31
 author: "Kai Team"
 tags: [kai, programming-language, ml, ai, blas, cuda, performance, ffi]
 categories: [engineering]
-cover_image: "blog/assets/images/blog/c_wood.jpg"
+cover_image: "/assets/images/blog/c_wood.jpg"
 excerpt: "Without a C FFI, Kai does matrix math in a slow interpreter loop—a 512×512 multiply takes ~2,400ms. With BLAS and CUDA via direct C calls, that same operation drops to ~2ms on CPU or ~0.1ms on GPU, making Kai viable for real ML workloads."
 ---
 
